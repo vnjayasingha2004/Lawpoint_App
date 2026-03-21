@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LawPoint Admin Dashboard</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --primary: #2563eb;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --secondary: #111827;
+      --overlay: rgba(17, 24, 39, 0.45);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .hidden { display: none !important; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+    }
+
+    h1, h2, h3, h4, p { margin-top: 0; }
+
+    .login-shell {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      font-size: 14px;
+      margin-bottom: 14px;
+      background: #fff;
+      outline: none;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--primary);
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 11px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    button:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-success { background: var(--success); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-secondary { background: var(--secondary); color: white; }
+
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-left, .toolbar-right {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .metric {
+      padding: 18px;
+      border-radius: 16px;
+      background: white;
+      border: 1px solid var(--border);
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .metric .value {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .lawyer-card {
+      display: grid;
+      gap: 12px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .lawyer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .lawyer-meta {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status {
+      padding: 10px 12px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .status.info { background: #dbeafe; color: #1d4ed8; }
+    .status.success { background: #dcfce7; color: #166534; }
+    .status.error { background: #fee2e2; color: #991b1b; }
+
+    .small {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .user-strip {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: var(--overlay);
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      z-index: 1000;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 520px;
+      background: white;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+      padding: 20px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 720px) {
+      .toolbar {
+        align-items: stretch;
+      }
+
+      .toolbar-left, .toolbar-right {
+        width: 100%;
+      }
+
+      .toolbar-right button {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section id="loginView" class="login-shell">
+    <div class="card login-card">
+      <h1>LawPoint Admin Login</h1>
+      <p class="small">Use your admin account to access verification and analytics.</p>
+      <div id="loginStatus"></div>
+
+      <label for="baseUrl">Backend Base URL</label>
+      <input id="baseUrl" value="http://localhost:5000" />
+
+      <label for="identifier">Email or phone</label>
+      <input id="identifier" type="text" placeholder="admin@lawpoint.test or phone" />
+
+      <label for="password">Password</label>
+      <input id="password" type="password" placeholder="Password" />
+
+      <button id="loginBtn" class="btn-primary">Login</button>
+    </div>
+  </section>
+
+  <section id="dashboardView" class="hidden">
+    <div class="container">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <h1 style="margin:0;">LawPoint Admin Dashboard</h1>
+        </div>
+        <div class="toolbar-right">
+          <button id="refreshBtn" class="btn-secondary">Refresh</button>
+          <button id="logoutBtn" class="btn-danger">Logout</button>
+        </div>
+      </div>
+
+      <div class="user-strip">
+        <div><strong>Backend:</strong> <span id="currentBaseUrl">-</span></div>
+        <div><strong>Signed in:</strong> <span id="currentUserLabel">-</span></div>
+      </div>
+
+      <div id="dashboardStatus"></div>
+
+      <div class="grid">
+        <div class="metric">
+          <div class="label">Total Users</div>
+          <div id="metricTotalUsers" class="value">-</div>
+        </div>
+        <div class="metric">
+          <div class="label">Active Users</div>
+          <div id="metricActiveUsers" class="value">-</div>
+        </div>
+        <div class="metric">
+          <div class="label">Approved Lawyers</div>
+          <div id="metricLawyers" class="value">-</div>
+        </div>
+        <div class="metric">
+          <div class="label">Total Bookings</div>
+          <div id="metricBookings" class="value">-</div>
+        </div>
+        <div class="metric">
+          <div class="label">Scheduled Bookings</div>
+          <div id="metricScheduledBookings" class="value">-</div>
+        </div>
+        <div class="metric">
+          <div class="label">Pending Verifications</div>
+          <div id="metricPending" class="value">-</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="toolbar">
+          <div>
+            <h2 style="margin-bottom:4px;">Verification Queue</h2>
+            <p class="small">Approve or reject pending lawyer requests.</p>
+          </div>
+          <div class="pill" id="queueCountPill">0 pending</div>
+        </div>
+        <div id="queueList" class="list"></div>
+      </div>
+    </div>
+  </section>
+
+  <div id="rejectModalBackdrop" class="modal-backdrop hidden">
+    <div class="modal">
+      <h3>Reject Lawyer</h3>
+      <p class="small">Provide a clear rejection reason. This will be sent back to the lawyer.</p>
+
+      <div style="margin-bottom:12px;">
+        <strong id="rejectLawyerName">-</strong>
+      </div>
+
+      <label for="rejectReasonInput">Rejection reason</label>
+      <textarea id="rejectReasonInput" placeholder="Explain why this verification request is rejected"></textarea>
+
+      <div class="modal-actions">
+        <button id="cancelRejectBtn" class="btn-secondary">Cancel</button>
+        <button id="confirmRejectBtn" class="btn-danger">Reject</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const storageKeys = {
+      accessToken: 'lawpoint_admin_access_token',
+      refreshToken: 'lawpoint_admin_refresh_token',
+      baseUrl: 'lawpoint_admin_base_url',
+      user: 'lawpoint_admin_user'
+    };
+
+    let queueItems = [];
+    let rejectTarget = null;
+    let refreshingPromise = null;
+
+    const loginView = document.getElementById('loginView');
+    const dashboardView = document.getElementById('dashboardView');
+    const loginStatus = document.getElementById('loginStatus');
+    const dashboardStatus = document.getElementById('dashboardStatus');
+    const baseUrlInput = document.getElementById('baseUrl');
+    const identifierInput = document.getElementById('identifier');
+    const passwordInput = document.getElementById('password');
+    const loginBtn = document.getElementById('loginBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const queueList = document.getElementById('queueList');
+    const currentBaseUrl = document.getElementById('currentBaseUrl');
+    const currentUserLabel = document.getElementById('currentUserLabel');
+    const queueCountPill = document.getElementById('queueCountPill');
+
+    const metricTotalUsers = document.getElementById('metricTotalUsers');
+    const metricActiveUsers = document.getElementById('metricActiveUsers');
+    const metricLawyers = document.getElementById('metricLawyers');
+    const metricBookings = document.getElementById('metricBookings');
+    const metricScheduledBookings = document.getElementById('metricScheduledBookings');
+    const metricPending = document.getElementById('metricPending');
+
+    const rejectModalBackdrop = document.getElementById('rejectModalBackdrop');
+    const rejectLawyerName = document.getElementById('rejectLawyerName');
+    const rejectReasonInput = document.getElementById('rejectReasonInput');
+    const cancelRejectBtn = document.getElementById('cancelRejectBtn');
+    const confirmRejectBtn = document.getElementById('confirmRejectBtn');
+
+    function setStatus(el, type, message) {
+      if (!message) {
+        el.innerHTML = '';
+        return;
+      }
+      el.innerHTML = '<div class="status ' + escapeHtml(type) + '">' + escapeHtml(message) + '</div>';
+    }
+
+    function normalizeBaseUrl(value) {
+      return String(value || 'http://localhost:5000').trim().replace(/\/+$/, '');
+    }
+
+    function getBaseUrl() {
+      return normalizeBaseUrl(localStorage.getItem(storageKeys.baseUrl) || baseUrlInput.value || 'http://localhost:5000');
+    }
+
+    function getAccessToken() {
+      return localStorage.getItem(storageKeys.accessToken);
+    }
+
+    function getRefreshToken() {
+      return localStorage.getItem(storageKeys.refreshToken);
+    }
+
+    function getSavedUser() {
+      try {
+        return JSON.parse(localStorage.getItem(storageKeys.user) || 'null');
+      } catch {
+        return null;
+      }
+    }
+
+    function saveSession({ accessToken, refreshToken, baseUrl, user }) {
+      if (accessToken) localStorage.setItem(storageKeys.accessToken, accessToken);
+      if (refreshToken) localStorage.setItem(storageKeys.refreshToken, refreshToken);
+      if (baseUrl) localStorage.setItem(storageKeys.baseUrl, normalizeBaseUrl(baseUrl));
+      if (user) localStorage.setItem(storageKeys.user, JSON.stringify(user));
+    }
+
+    function clearSession() {
+      localStorage.removeItem(storageKeys.accessToken);
+      localStorage.removeItem(storageKeys.refreshToken);
+      localStorage.removeItem(storageKeys.baseUrl);
+      localStorage.removeItem(storageKeys.user);
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function formatDate(value) {
+      if (!value) return '-';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return String(value);
+      return date.toLocaleString();
+    }
+
+    function formatArray(value) {
+      if (Array.isArray(value)) {
+        return value.filter(Boolean).join(', ') || '-';
+      }
+      return value ? String(value) : '-';
+    }
+
+    function formatMoney(value) {
+      const num = Number(value);
+      return Number.isFinite(num) ? num.toString() : '-';
+    }
+
+    function showDashboard() {
+      loginView.classList.add('hidden');
+      dashboardView.classList.remove('hidden');
+      currentBaseUrl.textContent = getBaseUrl();
+      const user = getSavedUser();
+      currentUserLabel.textContent = user?.email || user?.phone || user?.id || 'Admin';
+    }
+
+    function showLogin() {
+      dashboardView.classList.add('hidden');
+      loginView.classList.remove('hidden');
+      baseUrlInput.value = localStorage.getItem(storageKeys.baseUrl) || 'http://localhost:5000';
+      const user = getSavedUser();
+      if (user?.email) {
+        identifierInput.value = user.email;
+      }
+    }
+
+    function openRejectModal(item) {
+      rejectTarget = item;
+      rejectLawyerName.textContent = item.fullName || 'Unnamed lawyer';
+      rejectReasonInput.value = item.verificationReason || '';
+      rejectModalBackdrop.classList.remove('hidden');
+      rejectReasonInput.focus();
+    }
+
+    function closeRejectModal() {
+      rejectTarget = null;
+      rejectLawyerName.textContent = '-';
+      rejectReasonInput.value = '';
+      rejectModalBackdrop.classList.add('hidden');
+    }
+
+    async function refreshAccessToken() {
+      if (refreshingPromise) return refreshingPromise;
+
+      const refreshToken = getRefreshToken();
+      if (!refreshToken) return false;
+
+      refreshingPromise = (async () => {
+        try {
+          const response = await fetch(getBaseUrl() + '/api/v1/auth/refresh', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refreshToken })
+          });
+
+          const text = await response.text();
+          let data = {};
+          try {
+            data = text ? JSON.parse(text) : {};
+          } catch {
+            data = {};
+          }
+
+          if (!response.ok || !data.accessToken) {
+            clearSession();
+            return false;
+          }
+
+          saveSession({
+            accessToken: data.accessToken,
+            refreshToken: data.refreshToken || refreshToken,
+            baseUrl: getBaseUrl(),
+            user: getSavedUser()
+          });
+
+          return true;
+        } catch {
+          clearSession();
+          return false;
+        } finally {
+          refreshingPromise = null;
+        }
+      })();
+
+      return refreshingPromise;
+    }
+
+    async function apiRequest(path, options = {}, retry = true) {
+      const headers = {
+        'Content-Type': 'application/json',
+        ...(options.headers || {})
+      };
+
+      const accessToken = getAccessToken();
+      if (accessToken) {
+        headers.Authorization = 'Bearer ' + accessToken;
+      }
+
+      const response = await fetch(getBaseUrl() + path, {
+        ...options,
+        headers
+      });
+
+      if (response.status === 401 && retry && getRefreshToken()) {
+        const refreshed = await refreshAccessToken();
+        if (refreshed) {
+          return apiRequest(path, options, false);
+        }
+      }
+
+      const text = await response.text();
+      let data = null;
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch {
+        data = text;
+      }
+
+      if (!response.ok) {
+        const message = data?.error || data?.message || ('Request failed with ' + response.status);
+        throw new Error(message);
+      }
+
+      return data;
+    }
+
+    async function fetchCurrentUser() {
+      const user = await apiRequest('/api/v1/users/me');
+      const role = String(user?.role || '').toLowerCase();
+
+      if (role !== 'admin') {
+        throw new Error('This account is not an admin account.');
+      }
+
+      saveSession({
+        accessToken: getAccessToken(),
+        refreshToken: getRefreshToken(),
+        baseUrl: getBaseUrl(),
+        user
+      });
+
+      currentUserLabel.textContent = user.email || user.phone || user.id || 'Admin';
+      return user;
+    }
+
+    async function login() {
+      try {
+        setStatus(loginStatus, 'info', 'Logging in...');
+        loginBtn.disabled = true;
+
+        const baseUrl = normalizeBaseUrl(baseUrlInput.value);
+        const identifier = identifierInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!identifier || !password) {
+          throw new Error('Identifier and password are required.');
+        }
+
+        const response = await fetch(baseUrl + '/api/v1/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            identifier,
+            password
+          })
+        });
+
+        const text = await response.text();
+        let data = {};
+        try {
+          data = text ? JSON.parse(text) : {};
+        } catch {
+          data = {};
+        }
+
+        if (!response.ok) {
+          throw new Error(data?.error || 'Login failed');
+        }
+
+        const accessToken = data.accessToken || data.token;
+        const refreshToken = data.refreshToken || null;
+
+        if (!accessToken) {
+          throw new Error('No access token returned by backend.');
+        }
+
+        saveSession({
+          accessToken,
+          refreshToken,
+          baseUrl,
+          user: data.user || null
+        });
+
+        await fetchCurrentUser();
+
+        setStatus(loginStatus, 'success', 'Login successful.');
+        passwordInput.value = '';
+        showDashboard();
+        await loadDashboard();
+      } catch (error) {
+        setStatus(loginStatus, 'error', error.message || 'Login failed.');
+      } finally {
+        loginBtn.disabled = false;
+      }
+    }
+
+    function renderQueue(items) {
+      if (!Array.isArray(items) || items.length === 0) {
+        queueList.innerHTML = '<div class="small">No pending verification requests.</div>';
+        queueCountPill.textContent = '0 pending';
+        return;
+      }
+
+      queueCountPill.textContent = items.length + ' pending';
+
+      queueList.innerHTML = items.map((item) => {
+        const lawyerId = item.id || item.lawyerId || item.lawyer_id || '';
+        const fullName = item.fullName || 'Unnamed lawyer';
+        const district = item.district || '-';
+        const fees = formatMoney(item.feesLkr);
+        const languages = formatArray(item.languages);
+        const specs = formatArray(item.specializations);
+        const bio = item.bio || 'No bio available.';
+        const submittedAt = formatDate(item.submittedAt);
+        const email = item.email || '-';
+        const phone = item.phone || '-';
+        const enrolmentNumber = item.enrolmentNumber || '-';
+        const baslId = item.baslId || '-';
+
+        return `
+          <div class="lawyer-card">
+            <div class="lawyer-header">
+              <div>
+                <h3 style="margin-bottom:6px;">${escapeHtml(fullName)}</h3>
+                <div class="small">Submitted: ${escapeHtml(submittedAt)}</div>
+              </div>
+              <div class="pill">${escapeHtml(item.verificationStatus || 'PENDING')}</div>
+            </div>
+
+            <div class="lawyer-meta">
+              <div><strong>Lawyer ID:</strong> ${escapeHtml(lawyerId)}</div>
+              <div><strong>Email:</strong> ${escapeHtml(email)}</div>
+              <div><strong>Phone:</strong> ${escapeHtml(phone)}</div>
+              <div><strong>District:</strong> ${escapeHtml(district)}</div>
+              <div><strong>Languages:</strong> ${escapeHtml(languages)}</div>
+              <div><strong>Specializations:</strong> ${escapeHtml(specs)}</div>
+              <div><strong>Fees (LKR):</strong> ${escapeHtml(fees)}</div>
+              <div><strong>Enrolment Number:</strong> ${escapeHtml(enrolmentNumber)}</div>
+              <div><strong>BASL ID:</strong> ${escapeHtml(baslId)}</div>
+              <div><strong>Bio:</strong> ${escapeHtml(bio)}</div>
+            </div>
+
+            <div class="actions">
+              <button class="btn-success" onclick="approveLawyer('${escapeHtml(lawyerId)}')">Approve</button>
+              <button class="btn-danger" onclick="startRejectLawyer('${escapeHtml(lawyerId)}')">Reject</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function loadAnalytics() {
+      const data = await apiRequest('/api/v1/admin/analytics');
+      metricTotalUsers.textContent = data.totalUsers ?? '-';
+      metricActiveUsers.textContent = data.activeUsers ?? '-';
+      metricLawyers.textContent = data.activeLawyers ?? '-';
+      metricBookings.textContent = data.totalBookings ?? '-';
+      metricScheduledBookings.textContent = data.scheduledBookings ?? '-';
+      metricPending.textContent = data.pendingVerifications ?? '-';
+    }
+
+    async function loadQueue() {
+      const data = await apiRequest('/api/v1/admin/verification-queue');
+      const items = data.items || [];
+      queueItems = items;
+      renderQueue(items);
+      metricPending.textContent = Array.isArray(items) ? items.length : '-';
+    }
+
+    async function loadDashboard() {
+      try {
+        setStatus(dashboardStatus, 'info', 'Loading dashboard...');
+        await fetchCurrentUser();
+        await Promise.all([loadAnalytics(), loadQueue()]);
+        setStatus(dashboardStatus, 'success', 'Dashboard loaded.');
+      } catch (error) {
+        setStatus(dashboardStatus, 'error', error.message || 'Failed to load dashboard.');
+      }
+    }
+
+    async function approveLawyer(lawyerId) {
+      try {
+        setStatus(dashboardStatus, 'info', 'Approving ' + lawyerId + '...');
+        await apiRequest('/api/v1/admin/verification-queue/' + encodeURIComponent(lawyerId) + '/approve', {
+          method: 'POST',
+          body: JSON.stringify({})
+        });
+        setStatus(dashboardStatus, 'success', 'Lawyer approved successfully.');
+        await loadDashboard();
+      } catch (error) {
+        setStatus(dashboardStatus, 'error', error.message || 'Approve failed.');
+      }
+    }
+
+    function startRejectLawyer(lawyerId) {
+      const item = queueItems.find((x) => String(x.id) === String(lawyerId));
+      if (!item) {
+        setStatus(dashboardStatus, 'error', 'Unable to find selected lawyer.');
+        return;
+      }
+      openRejectModal(item);
+    }
+
+    async function confirmRejectLawyer() {
+      if (!rejectTarget) return;
+
+      const lawyerId = rejectTarget.id;
+      const reason = rejectReasonInput.value.trim();
+
+      if (!reason) {
+        alert('Reject reason is required.');
+        return;
+      }
+
+      try {
+        confirmRejectBtn.disabled = true;
+        cancelRejectBtn.disabled = true;
+        setStatus(dashboardStatus, 'info', 'Rejecting ' + lawyerId + '...');
+        await apiRequest('/api/v1/admin/verification-queue/' + encodeURIComponent(lawyerId) + '/reject', {
+          method: 'POST',
+          body: JSON.stringify({ reason })
+        });
+        closeRejectModal();
+        setStatus(dashboardStatus, 'success', 'Lawyer rejected successfully.');
+        await loadDashboard();
+      } catch (error) {
+        setStatus(dashboardStatus, 'error', error.message || 'Reject failed.');
+      } finally {
+        confirmRejectBtn.disabled = false;
+        cancelRejectBtn.disabled = false;
+      }
+    }
+
+    async function logout() {
+      try {
+        const refreshToken = getRefreshToken();
+        if (refreshToken) {
+          await apiRequest('/api/v1/auth/logout', {
+            method: 'POST',
+            body: JSON.stringify({ refreshToken })
+          }, false);
+        }
+      } catch (_) {
+      } finally {
+        clearSession();
+        setStatus(dashboardStatus, 'info', 'Logged out.');
+        showLogin();
+      }
+    }
+
+    loginBtn.addEventListener('click', login);
+    refreshBtn.addEventListener('click', loadDashboard);
+    logoutBtn.addEventListener('click', logout);
+    cancelRejectBtn.addEventListener('click', closeRejectModal);
+    confirmRejectBtn.addEventListener('click', confirmRejectLawyer);
+
+    rejectModalBackdrop.addEventListener('click', (event) => {
+      if (event.target === rejectModalBackdrop) {
+        closeRejectModal();
+      }
+    });
+
+    passwordInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        login();
+      }
+    });
+
+    identifierInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        login();
+      }
+    });
+
+    window.approveLawyer = approveLawyer;
+    window.startRejectLawyer = startRejectLawyer;
+
+    (async function init() {
+      baseUrlInput.value = localStorage.getItem(storageKeys.baseUrl) || 'http://localhost:5000';
+
+      if (!getAccessToken()) {
+        showLogin();
+        return;
+      }
+
+      try {
+        showDashboard();
+        await loadDashboard();
+      } catch {
+        clearSession();
+        showLogin();
+      }
+    })();
+  </script>
+</body>
+</html>
