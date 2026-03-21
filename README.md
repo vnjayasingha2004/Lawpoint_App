@@ -16,7 +16,7 @@ LawPoint is a legal services platform with:
 ## Setup
 
 ### Backend
-1. Copy `.env.example` to `.env`
+1. Copy `.env.example`to `.env`
 2. Fill your local values
 3. Install packages
 4. Run the server
@@ -24,6 +24,9 @@ LawPoint is a legal services platform with:
 ### Database
 1. Create PostgreSQL database
 2. Run `database/schema.sql`
+3 . Comment down everything from line 930 - 1099 if you doesnt create a user name lawpoint_user
+4. comment down these lines 
+     5,29,32,40,1106
 
 
 ### Flutter
