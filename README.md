@@ -24,7 +24,8 @@ LawPoint is a legal services platform with:
 ### Database
 1. Create PostgreSQL database
 2. Run `database/schema.sql`
-3 . Comment down everything from line 930 - 1099 if you doesnt create a user name lawpoint_user
+
+3 . Delete everything from line 930 - 1099 if you doesnt create a user name lawpoint_user
 4. comment down these lines 
      5,29,32,40,1106
 
