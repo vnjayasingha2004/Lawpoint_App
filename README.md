@@ -16,10 +16,11 @@ LawPoint is a legal services platform with:
 ## Setup
 
 ### Backend
-1. Copy `.env.example`to `.env`
-2. Fill your local values
-3. Install packages
-4. Run the server
+1. Edit `.env` put your db name and db password correctly
+2. put your payhere merchant secret and ngrok url on http500 in `.env` 
+3. Fill your local values
+4. Install packages
+5. Run the server
 
 ### Database
 1. Create PostgreSQL database
