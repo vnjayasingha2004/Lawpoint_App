@@ -16,7 +16,7 @@ LawPoint is a legal services platform with:
 ## Setup
 
 ### Backend
-1. Edit `.env` put your db name and db password correctly
+1. Edit `.env` put your db name and db password correctly and storage file path to storage dir
 2. put your payhere merchant secret and ngrok url on http500 in `.env` 
 3. Fill your local values
 4. Install packages
@@ -25,9 +25,6 @@ LawPoint is a legal services platform with:
 ### Database
 1. Create PostgreSQL database
 2. Run `database/schema.sql`
-3. Delete everything from line 930 - 1099 if you doesnt create a user name lawpoint_user
-4. comment down these lines 
-     5,29,32,40,1106
 
 
 ### Flutter
